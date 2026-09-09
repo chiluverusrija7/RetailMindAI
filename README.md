@@ -1,271 +1,261 @@
-# RetailMind AI: Enterprise Retail Intelligence System
+# RetailMindAI
+A Machine Learning Framework for Retail Demand Forecasting, Customer Segmentation, and Revenue Prediction
 
-[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
-[![Scikit-Learn](https://img.shields.io/badge/scikit--learn-1.4%2B-orange.svg)](https://scikit-learn.org/)
-[![XGBoost](https://img.shields.io/badge/XGBoost-2.0%2B-red.svg)](https://xgboost.readthedocs.io/)
-[![LightGBM](https://img.shields.io/badge/LightGBM-4.0%2B-brightgreen.svg)](https://lightgbm.readthedocs.io/)
-[![Status](https://img.shields.io/badge/Status-Production%20Ready-success.svg)](#)
+## Overview
+RetailMindAI is an academic and portfolio machine learning project developed to address core analytical challenges in retail operations. Retail organizations frequently struggle with fragmented data, uncertain SKU demand, uncharacterized customer behavioral churn, and inaccurate transaction-level revenue estimates. 
 
-RetailMind AI is an end-to-end, multi-tier retail intelligence and predictive analytics platform engineered to optimize demand velocity, customer lifecycle value (LTV), inventory stockout risk, and basket revenue for omnichannel retail operations.
+Using historical transaction data from an Amazon retail dataset spanning 2020 through 2024, this project develops a structured, modular machine learning pipeline. It transitions from raw transactional data cleansing to feature engineering, time-series demand forecasting, unsupervised customer segmentation, and supervised sales revenue prediction, concluding with reproducible business intelligence signals.
 
 ---
 
-## 1. System Architecture
+## Problem Statement
+Modern retail data systems capture massive volumes of transaction logs, but converting raw logs into actionable operational decisions presents distinct challenges:
 
-RetailMind AI integrates transactional telemetry across an interconnected 6-phase analytical and machine learning pipeline:
+1. **Transaction Sales Prediction:** Accurately predicting the monetary value of customer transactions before order completion to evaluate basket size, promotional responsiveness, and product pricing tiers.
+2. **SKU Demand Understanding & Forecasting:** Modeling daily product demand across varying seasonality, trend cycles, and historical demand lags to guide inventory replenishment and minimize stockout or overstock situations.
+3. **Customer Behavioral Segmentation:** Grouping heterogeneous customer bases by purchasing recency, frequency, monetary spend, and friction (returns/cancellations) to identify high-value cohorts and at-risk buyers.
+4. **Converting Analytics to Actionable Signals:** Translating machine learning predictions and model outputs into measurable retail indicators?such as demand opportunity scores, volatility indices, and customer churn risk.
 
-```
-+--------------------------------------------------------------------------------------------------+
-|                                    RetailMind AI Architecture                                    |
-+--------------------------------------------------------------------------------------------------+
-                                                 ?
-                                                 ?
-               ????????????????????????????????????????????????????????????????????
-               ?  Phase 1 & 2: Data Understanding & Exploratory Data Analysis     ?
-               ?  ? Transaction schema validation (100,000 orders, 2020 - 2024)   ?
-               ?  ? Distributions, correlations, missingness, and outlier audits   ?
-               ????????????????????????????????????????????????????????????????????
-                                                 ?
-                                                 ?
-               ????????????????????????????????????????????????????????????????????
-               ?  Phase 3: Automated Feature Engineering                          ?
-               ?  ? Customer RFM & Behavioral Attributes (43,233 buyers)          ?
-               ?  ? Product Demand Velocity & Volatility (50 SKUs)                ?
-               ?  ? Daily Time-Series Lags & Rolling Statistics (91,250 days)     ?
-               ????????????????????????????????????????????????????????????????????
-                              ?                  ?                 ?
-              ?????????????????                  ?                 ?????????????????
-              ?                                  ?                                 ?
-?????????????????????????????      ?????????????????????????????     ?????????????????????????????
-? Phase 4: Demand Forecast  ?      ? Phase 5: Customer Seg.    ?     ? Phase 6: Prediction & KPIs?
-? ? SKU-level velocity      ?      ? ? Unsupervised K-Means    ?     ? ? Transaction GMV Regr.   ?
-? ? Multi-step horizon      ?      ? ? 4 Behavioral Cohorts    ?     ? ? Enterprise Retail KPIs  ?
-? ? LightGBM / XGB / Ridge  ?      ? ? PCA 2D Clustering       ?     ? ? Churn & Volatility Risk ?
-?????????????????????????????      ?????????????????????????????     ?????????????????????????????
-              ?                                  ?                                 ?
-              ??????????????????????????????????????????????????????????????????????
-                                                 ?
-                                                 ?
-               ????????????????????????????????????????????????????????????????????
-               ?            Unified Retail Intelligence & Decision Layer           ?
-               ?  ? Stockout Risk Mitigation & Replenishment Priority             ?
-               ?  ? Customer Retention Intervention & Dynamic Winback             ?
-               ?  ? Margin Optimization & Markdown Depth Management               ?
-               ?  ? Production-Ready Inference Pipeline (.pkl / .joblib)          ?
-               ????????????????????????????????????????????????????????????????????
+---
+
+## Objectives
+The primary technical and analytical goals of RetailMindAI are:
+- Clean and validate raw transactional telemetry across 100,000 purchase records.
+- Engineer time-series lag features, customer RFM summaries, and catalog-level metrics without lookahead leakage.
+- Benchmark multiple regression algorithms on holdout test data to forecast SKU-level daily velocity.
+- Segment customers using unsupervised clustering ($k$-Means) validated by Elbow and Silhouette methods.
+- Train, evaluate, and benchmark regression models (Linear Regression, Random Forest, GBDT, XGBoost) to predict transaction sales (`TotalAmount`).
+- Select the optimal predictive model using data-driven validation criteria.
+- Formulate deterministic, mathematically reproducible retail opportunity, volatility, and churn risk metrics.
+
+---
+
+## Current Capabilities
+
+### Implemented
+- **Data Understanding & Exploratory Analysis (`01_data_understanding.ipynb`, `02_eda.ipynb`):** Complete schema audit, duplicate checks, missing value resolution, distribution histograms, and correlation heatmaps.
+- **Feature Engineering (`03_feature_engineering.ipynb`):** Construction of customer RFM attributes, product catalog demand statistics, and a 91,250-row full-grid daily demand table with 1, 7, 14, and 28-day lag and rolling features.
+- **Demand Forecasting (`04_demand_forecasting.ipynb`):** Chronological train/validation/test split evaluation comparing LightGBM, XGBoost, and Ridge regression for SKU-level daily quantity prediction.
+- **Customer Segmentation (`05_customer_segmentation.ipynb`):** Standardized $k$-Means clustering on customer RFM features, selecting $k=4$ cohorts supported by Elbow inertia and Silhouette analysis, visualized via 2D PCA.
+- **Sales & Revenue Prediction (`prediction/01_sales_prediction.ipynb`):** Supervised regression benchmark across 4 models on 20,000 holdout test transactions; pipeline export (`.pkl` and `.joblib`) and CSV export with actuals, predictions, and errors.
+- **Business Signals & KPI Engineering (`06_business_signals_and_kpis.ipynb`):** Aggregation of 60 monthly retail KPI observations, SKU opportunity scores, demand volatility indices ($CV$), and customer churn risk scores.
+
+### In Progress
+- Additional diagnostic visualizations comparing cross-category elasticity.
+- Modularization of notebook helper functions into reusable Python scripts under `src/`.
+
+### Planned / Future Work
+- **SHAP-based model interpretation:** Detailed Shapley additive explanation analysis.
+- **Web Application / API:** REST API endpoints (e.g., FastAPI) and interactive UI dashboards (e.g., Streamlit).
+- **Automated Retraining:** Continuous integration pipelines for periodic model refreshing.
+
+---
+
+## Machine Learning Pipeline
+
+```text
+                        Raw Retail Data (Amazon.csv)
+                                     ?
+                         Data Understanding & EDA
+                                     ?
+                            Feature Engineering
+                   ?????????????????????????????????????
+                   ?                 ?                 ?
+          Demand Forecasting     Customer       Sales Prediction
+             (LightGBM,         Segmentation       (OLS, RF,
+            XGBoost, Ridge)      (k-Means)        GBDT, XGBoost)
+                   ?                 ?                 ?
+                   ?                 ?          Model Evaluation
+                   ?                 ?                 ?
+                   ?????????????????????????????????????
+                                     ?
+                             Feature Importance
+                                     ?
+                          Business Signals & KPIs
 ```
 
 ---
 
-## 2. Dataset Sources & Ingestion
+## Machine Learning Modules
 
-The repository processes real-world scale retail transactional data:
-- **Raw Transaction Source (`data/raw/Amazon.csv`)**: 100,000 transaction records spanning **January 1, 2020 to December 29, 2024** (5 full calendar years / 1,825 days).
-- **Entities Covered**:
-  - `OrderID`: 100,000 unique retail orders
-  - `CustomerID`: 43,233 unique non-null customers
-  - `ProductID`: 50 distinct catalog SKUs across multiple retail categories (Electronics, Apparel, Home & Kitchen, Books, etc.)
-  - `Geographies`: Multi-country distribution with country, state, and city telemetry
-  - `Financial Attributes`: Unit price, discount percentages, calculated tax, shipping costs, order fulfillment statuses, and payment mechanisms.
+### 1. Demand Forecasting
+- **Objective:** Forecast the next-day quantity demanded (`DailyQuantity`) for each of the 50 catalog products.
+- **Input:** Daily product demand dataset (`data/processed/daily_product_demand.csv`) containing 29 modeling features (lagged demand, rolling means, rolling standard deviations, day-of-week, month).
+- **Main Processing:** Chronological split into Train (59,324 rows; 2020-03-31 to 2023-06-30), Validation (13,747 rows; 2023-07-01 to 2024-03-31), and Test (13,643 rows; 2024-04-01 to 2024-12-29).
+- **Models / Algorithms:** LightGBM Regressor, XGBoost Regressor, Ridge Regression baseline.
+- **Output:** Evaluation metrics (MAE, RMSE, MAPE) across validation and holdout test horizons, plus LightGBM feature importance plots.
+
+### 2. Customer Segmentation
+- **Objective:** Categorize customers into actionable behavioral cohorts based on historical order habits and transaction friction.
+- **Input:** Customer feature summary (`data/processed/customer_features.csv`, 43,233 unique buyers).
+- **Main Processing:** Standard scaling followed by $k$-Means clustering evaluated from $k=2$ to $k=8$; dimensionality reduction via 2D PCA for visual separation.
+- **Model / Algorithm:** $k$-Means ($k=4$).
+- **Output:** 
+  - Segment 0: Inactive / At-Risk (low frequency $\mu=1.20$, high recency $\mu=944$ days; 38.1% of cohort)
+  - Segment 1: Steady Regulars (moderate frequency $\mu=2.48$, tenure $\mu=807$ days; 39.8% of cohort)
+  - Segment 2: Loyal Champions (highest spend $\mu=\$4,347$, frequent orders $\mu=4.26$; 19.1% of cohort)
+  - Segment 3: High-Friction / Cancellers (elevated cancellation rate $\mu=66\%$; 3.0% of cohort)
+  - Dataset: `data/processed/customer_segments.csv` and summary table `outputs/customer_segment_profile.csv`.
+
+### 3. Sales & Revenue Prediction
+- **Objective:** Predict transaction revenue (`TotalAmount`) at order inception.
+- **Input:** Cleaned transactions merged with customer segmentation labels and product demand intelligence features (`X`: 21 raw features).
+- **Main Processing:** `ColumnTransformer` with `StandardScaler` on numerical features and `OneHotEncoder(drop='first')` on categorical features; fixed 80/20 train/test split (`random_state=42`).
+- **Models / Algorithms:** Linear Regression (OLS), Random Forest Regressor, Gradient Boosting Regressor (GBDT), XGBoost Regressor.
+- **Output:** Serialized inference pipeline (`prediction/models/best_sales_prediction_model.pkl`), holdout predictions (`prediction/outputs/predictions.csv`), and performance comparison visuals.
+
+### 4. Business Intelligence & Measurable Signals
+- **Objective:** Transform model and historical telemetry into deterministic decision metrics.
+- **Input:** Merged processed datasets.
+- **Formulated Signals:**
+  - **Demand Opportunity Score (0 - 100):** $100 \times (0.50 \times \text{Rank}(\text{Revenue})/N + 0.50 \times \text{Rank}(\text{Growth})/N)$
+  - **Demand Volatility Index ($CV$):** $\text{DemandVolatility} / (\text{HistoricalAverageDemand} + 10^{-5})$
+  - **Customer Churn Risk Score (0.0 - 1.0):** $\text{clip}(\text{Recency} / 365.0, 0.0, 1.0)$
+  - **Customer Loyalty Index ($CLI$, 0 - 100):** Weighted percentile rank of Monetary ($40\%$), Frequency ($35\%$), and ActiveDays ($25\%$).
+- **Output:** `monthly_product_demand.csv`, `monthly_business_kpis.csv`, `product_opportunity_risk.csv`, `customer_retention_risk.csv`.
 
 ---
 
-## 3. Repository Directory Structure
+## Model Evaluation
 
-```
+### Sales & Revenue Prediction Benchmark
+Evaluated on the unseen holdout test set ($N_{\text{test}} = 20,000$ transactions) using a fixed 80/20 train/test split (`random_state=42`):
+
+| Model | MAE (\$) | RMSE (\$) | $R^2$ Score | Training Time (s) | Status |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **XGBoost Regressor** | **\$262.65** | **\$377.40** | **0.7266** | **0.67s** | **Selected Best Model** |
+| Gradient Boosting Regressor (GBDT) | \$263.12 | \$377.67 | 0.7262 | 118.14s | Evaluated |
+| Random Forest Regressor | \$261.30 | \$379.60 | 0.7234 | 71.65s | Evaluated |
+| Linear Regression (OLS Baseline) | \$330.27 | \$424.73 | 0.6537 | 0.32s | Evaluated |
+
+**Model Selection Rationale:**
+**XGBoost Regressor** was selected as the final model based on empirical criteria:
+1. **Variance & Error Control:** Achieves the highest $R^2$ ($0.7266$) and lowest RMSE ($\$377.40$) across all candidates. While Random Forest achieves a marginally lower MAE ($\$261.30$ vs $\$262.65$, a $\$1.35$ difference), XGBoost significantly reduces large residual errors (RMSE).
+2. **Computational Speed:** Completes 100-tree training in **$0.67\text{s}$**, compared to **$71.65\text{s}$** for Random Forest (~$100\times$ faster) and **$118.14\text{s}$** for Scikit-Learn GBDT (~$175\times$ faster).
+
+### Demand Forecasting Benchmark
+Evaluated on chronological holdout test data ($N_{\text{test}} = 13,643$ daily records, 2024-04-01 to 2024-12-29):
+
+| Model | Test MAE | Test RMSE | Test MAPE | Validation MAE | Validation RMSE |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Ridge Regression** | **2.819** | **3.495** | **61.87%** | 2.808 | 3.486 |
+| **LightGBM Regressor** | 2.821 | 3.494 | 61.99% | 2.808 | 3.485 |
+| **XGBoost Regressor** | 2.821 | 3.494 | 62.00% | 2.808 | 3.484 |
+
+*Note: All three models yield comparable error metrics on the standardized lag feature set; Ridge achieves the lowest test MAE by a marginal margin of 0.002 units.*
+
+---
+
+## Explainability
+
+SHAP-based explainability is planned as part of the model interpretation stage.
+
+Current model explainability is provided through tree-based split gain feature importances from the trained XGBoost sales predictor and LightGBM demand forecaster:
+- **Top Sales Revenue Drivers (XGBoost Gain):**
+  1. `UnitPrice` ($48.2\%$ relative gain): Catalog price tier is the primary anchor of basket value.
+  2. `AverageOrderValue` ($28.9\%$): Customer past spending history strongly predicts transaction magnitude.
+  3. `Monetary` ($3.3\%$): Cumulative customer lifetime spend.
+  4. `Discount` ($2.9\%$): Promotional markdown percentage.
+- **Top Demand Velocity Drivers (LightGBM):**
+  1. `rolling_mean_28` and `rolling_mean_7`: Short and medium-term historical sales velocity.
+  2. `lag_1` and `lag_7`: Recent purchase momentum and weekly seasonality.
+
+---
+
+## Dataset
+
+- **Source:** Amazon Retail Transaction Dataset (`data/raw/Amazon.csv`).
+- **Observation Period:** January 1, 2020 through December 29, 2024 ($1,825$ days).
+- **Volume:** 100,000 raw transactional orders across 50 products and 43,233 unique customers.
+- **Target Variables:**
+  - `TotalAmount` (Continuous numeric variable in USD $): Target for transaction-level sales prediction.
+  - `DailyQuantity` (Integer count): Target for SKU-level daily demand forecasting.
+- **Key Feature Fields:**
+  - Identifiers: `OrderID`, `CustomerID`, `ProductID`
+  - Transaction Context: `OrderDate`, `Quantity`, `UnitPrice`, `Discount`, `Tax`, `ShippingCost`
+  - Categoricals: `Category`, `Brand`, `PaymentMethod`, `OrderStatus`, `Country`, `City`
+- **Preprocessing Applied:**
+  - Datetime parsing and temporal decomposition (`Year`, `Month`, `DayOfWeek`, `IsWeekend`, `Quarter`).
+  - Creation of binary status indicators: `is_returned`, `is_cancelled`, `is_delivered`, `is_shipped`, `is_pending`.
+  - Exclusion of post-fulfillment target leakage variables (`Tax`, `ShippingCost`, `DiscountPct`) from predictive feature sets.
+  - Non-negativity bounding on predicted revenue to respect physical retail transaction boundaries.
+
+---
+
+## Repository Structure
+
+```text
 RetailMindAI/
 ??? data/
 ?   ??? raw/
-?   ?   ??? Amazon.csv                               # Source raw transaction log (100k records)
+?   ?   ??? Amazon.csv                               # Source raw transaction log (100,000 rows)
 ?   ??? processed/
-?       ??? retail_cleaned.csv                       # Cleaned, validated transactional dataset (100k x 26)
-?       ??? customer_features.csv                    # Customer-level RFM and behavioral metrics (43,233 x 15)
-?       ??? customer_segments.csv                    # Customer profiles with KMeans cluster assignments (43,233 x 16)
-?       ??? product_features.csv                     # Product catalog intelligence and demand velocity (50 x 20)
-?       ??? daily_product_demand.csv                 # Daily time-series with lag and rolling features (91,250 x 48)
-?       ??? monthly_product_demand.csv               # Monthly aggregated product demand & seasonality (17,931 x 17)
-?       ??? monthly_business_kpis.csv                # 60-month macroeconomic retail business KPIs (60 x 20)
-?       ??? product_opportunity_risk.csv             # SKU opportunity score, volatility CV, stockout risk (50 x 28)
-?       ??? customer_retention_risk.csv              # Churn risk scores, overdue ratios, loyalty indices (43,233 x 21)
+?       ??? retail_cleaned.csv                       # Cleaned transaction table (100,000 x 26)
+?       ??? customer_features.csv                    # Customer RFM metrics (43,233 x 15)
+?       ??? customer_segments.csv                    # Customer table with KMeans labels (43,233 x 16)
+?       ??? product_features.csv                     # Product catalog intelligence (50 x 20)
+?       ??? daily_product_demand.csv                 # Daily demand grid with lags (91,250 x 48)
+?       ??? monthly_product_demand.csv               # Monthly product demand & seasonality (17,931 x 17)
+?       ??? monthly_business_kpis.csv                # 60 monthly enterprise retail KPIs (60 x 20)
+?       ??? product_opportunity_risk.csv             # SKU opportunity score & stockout risk (50 x 28)
+?       ??? customer_retention_risk.csv              # Customer churn scores & loyalty index (43,233 x 21)
 ??? notebook/
-?   ??? 01_data_understanding.ipynb                  # Phase 1: Data ingestion, schema audit, null/duplicate checks
-?   ??? 02_eda.ipynb                                 # Phase 2: Exploratory data analysis, distributions, correlations
-?   ??? 03_feature_engineering.ipynb                 # Phase 3: RFM, temporal lag/rolling features, dataset exports
-?   ??? 04_demand_forecasting.ipynb                  # Phase 4: Time-split demand forecasting (LightGBM, XGBoost, Ridge)
-?   ??? 05_customer_segmentation.ipynb               # Phase 5: K-Means clustering (k=4), Elbow, Silhouette, PCA
-?   ??? 06_business_signals_and_kpis.ipynb           # Phase 6: Monthly KPIs, opportunity matrix, churn risk diagnostics
-??? outputs/
-?   ??? customer_segment_profile.csv                 # Cluster centroids and descriptive metric summary
-?   ??? figures/                                     # Publication-quality diagnostic visualizations (300 DPI)
-?       ??? actual_vs_predicted.png                  # Holdout test set actual vs predicted scatter plot
-?       ??? business_kpi_dashboard.png               # 4-panel enterprise KPI trend dashboard
-?       ??? customer_cluster_elbow.png               # K-Means inertia elbow curve (k=2..8)
-?       ??? customer_cluster_silhouette.png          # Silhouette score analysis across k
-?       ??? customer_churn_risk_distribution.png     # Boxplot distribution of churn risk by segment
-?       ??? customer_segment_distribution.png        # Bar chart of customer cohort populations
-?       ??? customer_segments_pca.png                # 2D PCA cluster projection
-?       ??? lgb_feature_importance.png               # LightGBM demand forecast split gain importances
-?       ??? monthly_revenue_trend.png                # 5-year longitudinal GMV and net revenue trajectory
-?       ??? numerical_correlation_heatmap.png        # Feature correlation matrix
-?       ??? numerical_distributions.png              # Skewness and distribution histograms
-?       ??? prediction_feature_importance.png        # Top 15 transaction revenue feature importances
-?       ??? prediction_model_comparison.png          # Multi-model benchmark bar charts (MAE, RMSE, R?)
-?       ??? prediction_residuals.png                 # Residuals vs fitted values and error distribution
-?       ??? product_opportunity_matrix.png           # 2D Product opportunity & stockout risk scatter plot
+?   ??? 01_data_understanding.ipynb                  # Data schema validation and summary stats
+?   ??? 02_eda.ipynb                                 # Exploratory data analysis and visualizations
+?   ??? 03_feature_engineering.ipynb                 # Customer RFM, product features, and demand lags
+?   ??? 04_demand_forecasting.ipynb                  # Time-split demand forecasting (LGBM, XGB, Ridge)
+?   ??? 05_customer_segmentation.ipynb               # Unsupervised KMeans clustering (k=4) & PCA
+?   ??? 06_business_signals_and_kpis.ipynb           # Monthly KPIs, opportunity matrix, churn risk
 ??? prediction/
-?   ??? 01_sales_prediction.ipynb                    # Production sales regression notebook (OLS, RF, GBDT, XGB)
+?   ??? 01_sales_prediction.ipynb                    # Supervised sales regression benchmark
 ?   ??? models/
-?   ?   ??? best_sales_prediction_model.pkl          # End-to-end serialized inference pipeline (Pickle)
-?   ?   ??? best_sales_prediction_model.joblib       # End-to-end serialized inference pipeline (Joblib)
+?   ?   ??? best_sales_prediction_model.pkl          # Serialized inference pipeline (Pickle)
+?   ?   ??? best_sales_prediction_model.joblib       # Serialized inference pipeline (Joblib)
 ?   ??? outputs/
-?       ??? predictions.csv                          # Holdout test predictions with residuals and IDs (20k x 11)
-??? src/                                             # Modular production helper scripts
-??? README.md                                        # Master repository documentation
+?       ??? predictions.csv                          # Holdout predictions with actuals & residuals (20,000 x 11)
+??? outputs/
+?   ??? customer_segment_profile.csv                 # Centroid summaries of customer segments
+?   ??? figures/                                     # Diagnostic and evaluation plots (.png)
+??? src/                                             # Helper modules (placeholder for packaging)
+??? .gitignore                                       # Python and Jupyter ignore configuration
+??? README.md                                        # Project documentation
 ```
 
 ---
 
-## 4. Derived Production Datasets Summary
+## How to Run
 
-All generated datasets are strictly reproducible, fully validated, and persisted under `data/processed/`:
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/chiluverusrija7/RetailMindAI.git
+   cd RetailMindAI
+   ```
 
-| Dataset | Records | Features | Primary Key | Description |
-| :--- | :---: | :---: | :---: | :--- |
-| **`retail_cleaned.csv`** | 100,000 | 26 | `OrderID` | Cleaned transactions with validated datatypes, parsed timestamps, and zero missing values. |
-| **`customer_features.csv`** | 43,233 | 15 | `CustomerID` | Customer RFM metrics (Recency, Frequency, Monetary), tenure (`ActiveDays`), AOV, return rates. |
-| **`customer_segments.csv`** | 43,233 | 16 | `CustomerID` | Customer feature table enriched with optimal $k=4$ KMeans cluster assignment (`customer_segment`). |
-| **`product_features.csv`** | 50 | 20 | `ProductID` | Catalog intelligence: historical average demand, demand volatility, price tier, repeat buyer ratio. |
-| **`daily_product_demand.csv`** | 91,250 | 48 | `ProductID, Date` | 50 products $	imes$ 1,825 days with multi-horizon lag ($1, 7, 14, 28	ext{d}$) and rolling demand stats. |
-| **`monthly_product_demand.csv`** | 17,931 | 17 | `ProductID, YearMonth` | Monthly aggregated SKU volume, revenue, MoM growth rates, and seasonal demand indices. |
-| **`monthly_business_kpis.csv`** | 60 | 20 | `YearMonth` | Macroeconomic enterprise health: GMV, Net Revenue, AOV, active buyer counts, return/cancel rates. |
-| **`product_opportunity_risk.csv`** | 50 | 28 | `ProductID` | SKU Opportunity Score, Volatility Index ($CV$), Realized Unit Price, and Stockout Risk Level. |
-| **`customer_retention_risk.csv`** | 43,233 | 21 | `CustomerID` | Purchase cycle overdue ratio, empirical Churn Risk Score, Customer Loyalty Index ($CLI$). |
-| **`prediction/outputs/predictions.csv`**| 20,000 | 11 | `OrderID` | Holdout test predictions generated by winning XGBoost model with absolute and residual errors. |
+2. **Install dependencies:**
+   ```bash
+   pip install numpy pandas scikit-learn xgboost lightgbm matplotlib seaborn joblib nbclient nbformat
+   ```
 
----
-
-## 5. Measurable Business Signals & Formulations
-
-To eliminate arbitrary scoring and guarantee academic and operational defensibility, every business signal is mathematically grounded in observable data:
-
-### 5.1 Demand Opportunity Score (DOI, 0 - 100)
-Measures the joint magnitude of cumulative revenue generation and recent demand acceleration:
-$$	ext{DOI}_i = 100 	imes \left(0.50 	imes rac{	ext{Rank}(	ext{TotalRevenue}_i)}{N} + 0.50 	imes rac{	ext{Rank}(	ext{DemandGrowth}_i)}{N}ight)$$
-
-### 5.2 Demand Volatility Index ($CV$)
-The coefficient of variation measuring daily sales dispersion against mean velocity:
-$$CV_i = rac{	ext{DemandVolatility}_i}{	ext{HistoricalAverageDemand}_i + 10^{-5}}$$
-- $CV > 0.8$: Highly erratic, intermittent demand requiring elevated safety stock buffers.
-- $CV \le 0.5$: Predictable baseline demand suitable for automated continuous replenishment.
-
-### 5.3 Realized Net Unit Price
-Accounts for promotional discount erosion to assess actual margin realization:
-$$	ext{RealizedPrice}_i = 	ext{AveragePrice}_i 	imes (1 - 	ext{AverageDiscount}_i)$$
-
-### 5.4 Customer Churn Risk Score ($CRS \in [0.0, 1.0]$)
-Measures purchase cycle overdue status against observed dormancy:
-$$	ext{ExpectedPurchaseCycle}_j = egin{cases} 	ext{clip}\left(rac{	ext{ActiveDays}_j}{	ext{Frequency}_j - 1}, 15, 365ight), & 	ext{if } 	ext{Frequency}_j > 1 \ 90.0, & 	ext{if } 	ext{Frequency}_j = 1 \end{cases}$$
-$$	ext{OverdueRatio}_j = rac{	ext{Recency}_j}{	ext{ExpectedPurchaseCycle}_j}, \quad 	ext{ChurnRiskScore}_j = 	ext{clip}\left(rac{	ext{Recency}_j}{365.0}, 0.0, 1.0ight)$$
-
-### 5.5 Customer Loyalty Index ($CLI$, 0 - 100)
-Composite percentile rank weighting Monetary capital ($40\%$), Purchase Frequency ($35\%$), and Brand Tenure ($25\%$):
-$$CLI_j = 100 	imes \left(0.40 	imes rac{	ext{Rank}(	ext{Monetary}_j)}{N} + 0.35 	imes rac{	ext{Rank}(	ext{Frequency}_j)}{N} + 0.25 	imes rac{	ext{Rank}(	ext{ActiveDays}_j)}{N}ight)$$
+3. **Execute the pipeline notebooks in sequence:**
+   ```bash
+   jupyter nbconvert --to notebook --execute notebook/01_data_understanding.ipynb
+   jupyter nbconvert --to notebook --execute notebook/02_eda.ipynb
+   jupyter nbconvert --to notebook --execute notebook/03_feature_engineering.ipynb
+   jupyter nbconvert --to notebook --execute notebook/04_demand_forecasting.ipynb
+   jupyter nbconvert --to notebook --execute notebook/05_customer_segmentation.ipynb
+   jupyter nbconvert --to notebook --execute notebook/06_business_signals_and_kpis.ipynb
+   jupyter nbconvert --to notebook --execute prediction/01_sales_prediction.ipynb
+   ```
 
 ---
 
-## 6. Machine Learning Model Benchmarks
-
-### 6.1 Customer Segmentation (Phase 5 ? K-Means Clustering)
-Optimal clustering selected at **$k=4$** via joint Elbow and Silhouette analysis:
-- **Segment 0 (Inactive / At-Risk ? 38.1% of buyers)**: Low frequency ($\mu = 1.20$), high recency ($\mu = 944$ days). Target: Winback reactivation discounts.
-- **Segment 1 (Steady Regulars ? 39.8% of buyers)**: Moderate frequency ($\mu = 2.48$), balanced tenure ($\mu = 807$ days), $AOV = \$894$. Target: Cross-sell bundles.
-- **Segment 2 (Loyal Champions ? 19.1% of buyers)**: Highest spend ($\mu = \$4,347$), frequent orders ($\mu = 4.26$), active tenure ($\mu = 1,144$ days). Target: VIP loyalty care and zero-friction logistics.
-- **Segment 3 (High-Friction / Cancellers ? 3.0% of buyers)**: High cancellation rate ($\mu = 66\%$), low return rate. Target: Address order fulfillment friction and delivery reliability.
-
-### 6.2 Sales & Revenue Prediction Benchmark (Phase 6 / Prediction Module)
-Evaluated on an unbiased holdout test set of $20,000$ unseen transactions ($80/20$ train/test split, `random_state=42`):
-
-| Model Architecture | MAE (\$) | RMSE (\$) | $R^2$ Score | Training Latency (s) | Selection Status |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **XGBoost Regressor** | **\$262.65** | **\$377.40** | **0.7266** | **0.67s** | **Selected Winner** |
-| Gradient Boosting Regressor (GBDT) | \$263.12 | \$377.67 | 0.7262 | 118.14s | Candidate |
-| Random Forest Regressor | \$261.30 | \$379.60 | 0.7234 | 71.65s | Candidate |
-| Linear Regression (OLS Baseline) | \$330.27 | \$424.73 | 0.6537 | 0.32s | Baseline |
-
-**Winning Model Justification**:
-- **Variance Control**: XGBoost achieves the highest $R^2$ ($0.7266$) and lowest RMSE ($\$377.40$), penalizing catastrophic prediction errors much more effectively than Random Forest.
-- **Inference Efficiency**: XGBoost trains in **$0.67	ext{s}$** (over **$100	imes$ faster** than standard GBDT and **$100	imes$ faster** than Random Forest), enabling real-time edge retraining and high-throughput production serving.
-- **Top Feature Drivers**: Catalog unit price (`UnitPrice` ? $48.2\%$), customer spending history (`AverageOrderValue` ? $28.9\%$, `Monetary` ? $3.3\%$), and promotional discount (`Discount` ? $2.9\%$).
+## Project Limitations & Assumptions
+- **Absence of Wholesale Cost Data:** Wholesale cost of goods sold (COGS) is not present in the dataset; product margin realization is estimated via net unit revenue (`UnitPrice * (1 - Discount)`).
+- **Catalog Size:** The catalog is composed of 50 persistent products across the 5-year observation period.
+- **No Real-Time Serving Infrastructure:** Models and pipelines are serialized for offline batch inference; no active web API or streaming ingestion service is currently deployed.
 
 ---
 
-## 7. Reproduction & Execution Guide
-
-### Prerequisites
-- Python 3.10, 3.11, 3.12, or 3.13
-- Git
-
-### Installation
-```bash
-git clone https://github.com/chiluverusrija7/RetailMindAI.git
-cd RetailMindAI
-pip install numpy pandas scikit-learn xgboost lightgbm matplotlib seaborn joblib nbclient nbformat
-```
-
-### Sequential Pipeline Execution
-To execute the complete pipeline from raw ingestion to model serialization:
-```bash
-# Phase 1: Data Understanding
-jupyter nbconvert --to notebook --execute notebook/01_data_understanding.ipynb
-
-# Phase 2: Exploratory Data Analysis
-jupyter nbconvert --to notebook --execute notebook/02_eda.ipynb
-
-# Phase 3: Feature Engineering & Dataset Persistence
-jupyter nbconvert --to notebook --execute notebook/03_feature_engineering.ipynb
-
-# Phase 4: Demand Forecasting Engine
-jupyter nbconvert --to notebook --execute notebook/04_demand_forecasting.ipynb
-
-# Phase 5: Customer Segmentation Engine
-jupyter nbconvert --to notebook --execute notebook/05_customer_segmentation.ipynb
-
-# Phase 6: Business Intelligence & Measurable Signals
-jupyter nbconvert --to notebook --execute notebook/06_business_signals_and_kpis.ipynb
-
-# Prediction Module: Sales & Revenue Modeling & Pipeline Export
-cd prediction
-jupyter nbconvert --to notebook --execute 01_sales_prediction.ipynb
-```
-
-### Programmatic Inference Verification
-The saved model encapsulates both preprocessing and inference logic:
-```python
-import joblib
-import pandas as pd
-
-# Load serialized pipeline
-pipeline = joblib.load('prediction/models/best_sales_prediction_model.pkl')
-
-# Inference on raw unseen records (no manual preprocessing required)
-sample_df = pd.read_csv('data/processed/retail_cleaned.csv', nrows=5)
-predictions = pipeline.predict(sample_df)
-print("Predicted Transaction Sales ($):", predictions.round(2))
-```
-
----
-
-## 8. Assumptions, Operational Constraints & Limitations
-
-1. **Wholesale Cost Data Absence**: The dataset contains gross transaction prices, customer discounts, and shipping revenues, but lacks direct supplier wholesale cost of goods sold (COGS). Profit margins are proxied via net realized prices (`UnitPrice * (1 - Discount)`).
-2. **Promotional Context**: Markdowns are recorded as percentages applied per line item; multi-buy basket coupons or site-wide flash sales are modeled through aggregated discount depth metrics.
-3. **Static SKU Catalog**: The core product catalog tracks 50 persistent products across the 5-year observation period, enabling deep longitudinal lag feature engineering ($28$-day rolling windows).
-
----
-
-## 9. Contributors & Academic Context
-
-- **Author**: Chiluveru Srija ([@chiluverusrija7](https://github.com/chiluverusrija7))
-- **Institution**: KL University
-- **Repository**: [https://github.com/chiluverusrija7/RetailMindAI](https://github.com/chiluverusrija7/RetailMindAI)
-- **License**: Academic & Educational Open Access
+## Authors & Academic Context
+- **Author:** Chiluveru Srija ([@chiluverusrija7](https://github.com/chiluverusrija7))
+- **Project:** RetailMindAI ? Machine Learning Academic Project
